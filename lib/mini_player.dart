@@ -4,9 +4,9 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 
 class MiniPlayer extends StatefulWidget {
-  AudioPlayer player;
+  final AudioPlayer player;
 
-  MiniPlayer({
+  const MiniPlayer({
     Key? key,
     required this.player,
   }) : super(key: key);
@@ -77,7 +77,7 @@ class _MiniPlayerState extends State<MiniPlayer> {
                 Expanded(child: 
                   Row(children: [
                     SizedBox(width: 16, height: 80),
-                    Image.network(imageUrl, width: 60, height: 60, fit: BoxFit.cover),
+                    Image.asset('assets/image1.jpg', width: 60, height: 60, fit: BoxFit.cover),
                     Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(

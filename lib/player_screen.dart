@@ -1,22 +1,21 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_4/mini_player.dart';
 
-class MusicScreen extends StatefulWidget {
-  const MusicScreen({super.key});
+import 'mini_player.dart';
+
+class PlayerScreen extends StatefulWidget {
+  const PlayerScreen({super.key});
 
   @override
-  State<MusicScreen> createState() => _MusicScreenState();
+  State<PlayerScreen> createState() => _PlayerScreenState();
 }
 
-class _MusicScreenState extends State<MusicScreen> {
+class _PlayerScreenState extends State<PlayerScreen> {
   bool _isPlaying = false;
   AudioPlayer player = AudioPlayer();
 
-  Duration _currentPosition = Duration(seconds: 0);
-  Duration _totalDuration = Duration(seconds: 1);
+  Duration _currentPosition = const Duration(seconds: 0);
+  Duration _totalDuration = const Duration(seconds: 1);
 
   String formatDuration(Duration d) {
     String twoDigits(int n) {
@@ -34,12 +33,12 @@ class _MusicScreenState extends State<MusicScreen> {
     return GestureDetector(
       onTap: onTap,
       child: AnimatedSwitcher(
-        duration: Duration(milliseconds: 200),
+        duration: const Duration(milliseconds: 200),
         transitionBuilder: (Widget child, Animation<double> animation) {
           return ScaleTransition(scale: animation, child: child);
         },
         child: toggle
-          ? Icon(icn1, key: ValueKey<int>(1), size: 60, color: Colors.white)
+          ? Icon(icn1, key: const ValueKey<int>(1), size: 60, color: Colors.white)
           : Icon(icn2, size: 60, color: Colors.white)
       ),
     );
@@ -61,24 +60,24 @@ class _MusicScreenState extends State<MusicScreen> {
       setState(() => _totalDuration = d);
     });
   }
-
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xFF375C77),
-        title: Row(children: [
+        backgroundColor: const Color(0xFF375C77),
+        title: const Row(children: [
           Icon(Icons.arrow_back_ios, color: Colors.white),
           SizedBox(width: 10),
           Text('Now Playing', style: TextStyle(color: Colors.white)),
         ]),
-        actions: [
+        actions: const [
           Icon(Icons.more_vert, color: Colors.white),
           SizedBox(width: 8)
         ],
       ),
       body: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topCenter,
               end: Alignment.bottomCenter,
@@ -91,19 +90,19 @@ class _MusicScreenState extends State<MusicScreen> {
           child: Column(children: [
             Expanded(child: Column(
               children: [
-                Padding(padding: EdgeInsets.only(top: 70)),
+                const Padding(padding: EdgeInsets.only(top: 70)),
                 Container(
                   height: 350,
                   width: 350,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: DecorationImage(
+                    image: const DecorationImage(
                       image: AssetImage('assets/image1.jpg'),
                       fit: BoxFit.cover,
                     ),
                   ),
                 ),
-                Padding(padding: EdgeInsets.only(top: 90)),
+                const Padding(padding: EdgeInsets.only(top: 90)),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 28),
                   child: Row(
@@ -112,12 +111,12 @@ class _MusicScreenState extends State<MusicScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Mutyala Dhaarani', style: TextStyle(color: Colors.white, fontSize: 18)),
-                          Padding(padding: EdgeInsets.only(top: 4)),
+                          const Text('Mutyala Dhaarani', style: TextStyle(color: Colors.white, fontSize: 18)),
+                          const Padding(padding: EdgeInsets.only(top: 4)),
                           Text('Harris Jayaraj, Karthik, Meghna', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14)),
                         ],
                       ),
-                      Icon(Icons.info_outline, size: 24, color: Colors.white)
+                      const Icon(Icons.info_outline, size: 24, color: Colors.white)
                     ],
                   ),
                 ),
@@ -128,8 +127,8 @@ class _MusicScreenState extends State<MusicScreen> {
                     children: [
                       SliderTheme(
                         data: SliderTheme.of(context).copyWith(
-                          thumbShape: RoundSliderThumbShape(enabledThumbRadius: 5.0),
-                          trackShape: RectangularSliderTrackShape(),
+                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 5.0),
+                          trackShape: const RectangularSliderTrackShape(),
                           trackHeight: 2,
                         ),
                         child: Slider(
@@ -143,7 +142,7 @@ class _MusicScreenState extends State<MusicScreen> {
                       Positioned(
                         bottom: 2, right: 0, left: 0,
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -160,21 +159,20 @@ class _MusicScreenState extends State<MusicScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     IconButton(
-                      icon: Icon(Icons.skip_previous_outlined, size: 40, color: Colors.white),
+                      icon: const Icon(Icons.skip_previous_outlined, size: 40, color: Colors.white),
                       onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Clicked Prev"), duration: Duration(seconds: 1))),
                     ),
                     AnimatedIcon(
                       Icons.pause_circle, Icons.play_circle, _isPlaying, () => _isPlaying ? player.pause() : player.resume()
                     ),
                     IconButton(
-                      icon: Icon(Icons.skip_next_outlined, size: 40, color: Colors.white),
+                      icon: const Icon(Icons.skip_next_outlined, size: 40, color: Colors.white),
                       onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Clicked Next"), duration: Duration(seconds: 1))),
                     ),
                   ],
                 )
               ],
-            )
-            ),
+            )),
             MiniPlayer(player: player),
           ]
         ),
