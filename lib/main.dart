@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_4/music_data.dart';
+import 'package:flutter_application_4/player_service.dart';
+import 'package:flutter_application_4/song_card.dart';
 
-import 'music_screen.dart';
+import 'player_screen.dart';
 
 void main() {
-  runApp(const MainApp());
+  runApp(MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -11,8 +14,10 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: MusicScreen(),
+    return const MaterialApp (
+      home: Scaffold(
+        body: PlayerScreen(),
+      ),
     );
   }
 }

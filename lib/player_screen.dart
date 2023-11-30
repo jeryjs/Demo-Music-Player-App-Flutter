@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_4/music_data.dart';
+import 'package:flutter_application_4/player_service.dart';
 
-import 'mini_player.dart';
+import 'song_card.dart';
 
 class PlayerScreen extends StatefulWidget {
   const PlayerScreen({super.key});
@@ -11,11 +13,10 @@ class PlayerScreen extends StatefulWidget {
 }
 
 class _PlayerScreenState extends State<PlayerScreen> {
-  bool _isPlaying = false;
-  AudioPlayer player = AudioPlayer();
+  PlayerService ps = PlayerService();
+  late AudioPlayer player = ps.player;
 
-  Duration _currentPosition = const Duration(seconds: 0);
-  Duration _totalDuration = const Duration(seconds: 1);
+  late Song song = ps.songs[1];
 
   String formatDuration(Duration d) {
     String twoDigits(int n) {
@@ -47,18 +48,10 @@ class _PlayerScreenState extends State<PlayerScreen> {
   @override
   void initState() {
     super.initState();
-    player.setSource(AssetSource('song1.mp3'));
-    player.onPlayerStateChanged.listen((PlayerState s) {
-      debugPrint('Current player state: $s');
-      setState(() => _isPlaying = s == PlayerState.playing);
-    });
-    player.onPositionChanged.listen((Duration d) {
-      // debugPrint('Current position: $d');
-      setState(() => _currentPosition = d);
-    });
-    player.onDurationChanged.listen((Duration d) {
-      setState(() => _totalDuration = d);
-    });
+    player.setSource(song.source);
+    ps.addListener(() => setState(() {
+      debugPrint('PlayerScreen: PlayerService listener called on PlayerScreen');
+    }));
   }
   
   @override
@@ -87,7 +80,7 @@ class _PlayerScreenState extends State<PlayerScreen> {
               ],
             ),
           ),
-          child: Column(children: [
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
             Expanded(child: Column(
               children: [
                 const Padding(padding: EdgeInsets.only(top: 70)),
@@ -96,8 +89,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   width: 350,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
-                    image: const DecorationImage(
-                      image: AssetImage('assets/image1.jpg'),
+                    image: DecorationImage(
+                      image: NetworkImage(song.img),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -111,9 +104,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text('Mutyala Dhaarani', style: TextStyle(color: Colors.white, fontSize: 18)),
+                          Text(song.title, style: const TextStyle(color: Colors.white, fontSize: 18)),
                           const Padding(padding: EdgeInsets.only(top: 4)),
-                          Text('Harris Jayaraj, Karthik, Meghna', style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14)),
+                          Text(song.artist.join(', '), style: TextStyle(color: Colors.white.withOpacity(0.8), fontSize: 14)),
                         ],
                       ),
                       const Icon(Icons.info_outline, size: 24, color: Colors.white)
@@ -134,9 +127,9 @@ class _PlayerScreenState extends State<PlayerScreen> {
                         child: Slider(
                           activeColor: Colors.white,
                           inactiveColor: Colors.white.withOpacity(0.2),
-                          value: _currentPosition.inSeconds.toDouble(),
-                          max: _totalDuration.inSeconds.toDouble(),
-                          onChanged: (value) => setState(() => player.seek(Duration(seconds: value.toInt()))),
+                          value: ps.currentPosition.inSeconds.toDouble(),
+                          max: ps.totalDuration.inSeconds.toDouble(),
+                          onChanged: (value) => player.seek( Duration(seconds: value.toInt()) ),
                         ),
                       ),
                       Positioned(
@@ -146,8 +139,8 @@ class _PlayerScreenState extends State<PlayerScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(formatDuration(_currentPosition), style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
-                              Text(formatDuration(_totalDuration), style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
+                              Text(formatDuration(ps.currentPosition), style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
+                              Text(formatDuration(ps.totalDuration), style: TextStyle(color: Colors.white.withOpacity(0.7), fontSize: 12)),
                             ],
                           ),
                         ),
@@ -160,23 +153,30 @@ class _PlayerScreenState extends State<PlayerScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.skip_previous_outlined, size: 40, color: Colors.white),
-                      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Clicked Prev"), duration: Duration(seconds: 1))),
+                      onPressed: () => setState(() {
+                        song = ps.songs[ps.songs.indexOf(song)-1];
+                        player.setSource(song.source);
+                      }),
                     ),
                     AnimatedIcon(
-                      Icons.pause_circle, Icons.play_circle, _isPlaying, () => _isPlaying ? player.pause() : player.resume()
+                      Icons.pause_circle, Icons.play_circle, ps.isPlaying, () => ps.isPlaying ? player.pause() : player.resume()
                     ),
                     IconButton(
                       icon: const Icon(Icons.skip_next_outlined, size: 40, color: Colors.white),
-                      onPressed: () => ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Clicked Next"), duration: Duration(seconds: 1))),
+                      onPressed: () => setState(() {
+                        song = ps.songs[ps.songs.indexOf(song)+1];
+                        player.setSource(song.source);
+                      }),
                     ),
                   ],
                 )
               ],
             )),
-            MiniPlayer(player: player),
-          ]
+           SongCard(key: ValueKey(song), song: song, playerService: ps),
+          ],
         ),
       ),
+      // bottomNavigationBar: SizedBox(height:154, child: SongCard(song: song, playerService: ps)),
     );
   }
 }
